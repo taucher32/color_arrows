@@ -11,12 +11,19 @@ enum Dir {
 
 enum ArrowColor { coral, amber, mint, sky, violet }
 
+typedef Cell = ({int x, int y});
+
+/// A snake-shaped arrow: a path of neighbouring cells, tail first, head last.
 class Arrow {
-  const Arrow(this.id, this.x, this.y, this.dir, this.color);
+  const Arrow(this.id, this.cells, this.dir, this.color);
 
   final int id;
-  final int x;
-  final int y;
+  final List<Cell> cells;
+
+  /// Direction the head points. For 2+ cells it is the direction of the last
+  /// step; a single-cell arrow states it explicitly.
   final Dir dir;
   final ArrowColor color;
+
+  Cell get head => cells.last;
 }

@@ -9,6 +9,8 @@ class ColorStep {
 
 class Level {
   /// Throws [FormatException] when the level breaks a rule in the spec.
+  /// [arrows] are listed in a valid removal order and every board cell
+  /// belongs to exactly one arrow.
   Level({
     required this.width,
     required this.height,
@@ -24,8 +26,10 @@ class Level {
       arrows.add(
         Arrow(
           arrows.length,
-          a['x'] as int,
-          a['y'] as int,
+          [
+            for (final c in a['cells'] as List)
+              (x: (c as List)[0] as int, y: c[1] as int),
+          ],
           Dir.values.byName(a['dir'] as String),
           ArrowColor.values.byName(a['color'] as String),
         ),
@@ -47,9 +51,8 @@ class Level {
     );
   }
 
-  static const maxSize = 8;
-  // Solver keeps the arrows still present in an int bitmask.
-  static const maxArrows = 60;
+  static const maxSize = 20;
+  static const maxArrows = 400;
 
   final int width;
   final int height;
@@ -63,7 +66,13 @@ class Level {
     'h': height,
     'arrows': [
       for (final a in arrows)
-        {'x': a.x, 'y': a.y, 'dir': a.dir.name, 'color': a.color.name},
+        {
+          'cells': [
+            for (final c in a.cells) [c.x, c.y],
+          ],
+          'dir': a.dir.name,
+          'color': a.color.name,
+        },
     ],
     if (steps != null)
       'steps': [
@@ -79,13 +88,37 @@ class Level {
       throw const FormatException('arrow count must be 1..$maxArrows');
     }
     final seen = <int>{};
-    for (final a in arrows) {
-      if (a.x < 0 || a.y < 0 || a.x >= width || a.y >= height) {
-        throw FormatException('arrow ${a.id} outside board');
+    for (var i = 0; i < arrows.length; i++) {
+      final a = arrows[i];
+      if (a.id != i) {
+        throw FormatException('arrow at index $i has id ${a.id}');
       }
-      if (!seen.add(a.y * width + a.x)) {
-        throw FormatException('two arrows share cell (${a.x},${a.y})');
+      if (a.cells.isEmpty) throw FormatException('arrow $i has no cells');
+      for (var j = 0; j < a.cells.length; j++) {
+        final c = a.cells[j];
+        if (c.x < 0 || c.y < 0 || c.x >= width || c.y >= height) {
+          throw FormatException('arrow $i outside board');
+        }
+        if (!seen.add(c.y * width + c.x)) {
+          throw FormatException('cell (${c.x},${c.y}) is used twice');
+        }
+        if (j > 0) {
+          final p = a.cells[j - 1];
+          if ((p.x - c.x).abs() + (p.y - c.y).abs() != 1) {
+            throw FormatException('arrow $i has non-adjacent cells');
+          }
+        }
       }
+      if (a.cells.length > 1) {
+        final p = a.cells[a.cells.length - 2];
+        final h = a.cells.last;
+        if (a.dir.dx != h.x - p.x || a.dir.dy != h.y - p.y) {
+          throw FormatException('arrow $i head does not follow its last step');
+        }
+      }
+    }
+    if (seen.length != width * height) {
+      throw const FormatException('every cell must belong to an arrow');
     }
     final s = steps;
     if (s == null) return;
