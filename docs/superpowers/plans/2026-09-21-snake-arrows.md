@@ -1292,7 +1292,7 @@ git commit -m "feat: snake tiling generator with head-end repair" -m "Co-Authore
 
 **Interfaces:**
 - Consumes: `generateLevel`, `Level.toJson`, `winsInOrder` (`test/wins.dart`).
-- Produces: `const bakedLevels = 30`; `typedef LevelParams = ({int size, int maxLength, int colors, int groups})`; `LevelParams paramsFor(int n)`: levels 1-10 size 5..10, maxLength 3..6, colors 2..4, unordered; level 11+ size 10..20 (reaching 20 at level 50), maxLength 5..10, colors 3..5, groups 3..15, every 5th level unordered; `Level generateFor(int n)` (deterministic: seeds `n * 7919 + k`, k = 0..4; `StateError` if none works). `tool/bake_levels.dart` writes one arrow per line.
+- Produces: `const bakedLevels = 30`; `typedef LevelParams = ({int size, int maxLength, int colors, int groups})`; `LevelParams paramsFor(int n)`: levels 1-10 size 5..10, maxLength 3..6, colors 2..4, unordered; level 11+ size 10..20 (reaching 20 at level 50), maxLength 5..10, colors 3..5, groups 3..8, every 5th level unordered; `Level generateFor(int n)` (deterministic: seeds `n * 7919 + k`, k = 0..4; `StateError` if none works). `tool/bake_levels.dart` writes one arrow per line.
 
 - [ ] **Step 1: Replace the tests**
 

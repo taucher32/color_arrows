@@ -15,6 +15,17 @@ void main() {
     }
   });
 
+  test('baked levels match the difficulty curve', () async {
+    final repo = LevelRepository();
+    for (var n = 1; n <= bakedLevels; n++) {
+      expect(
+        (await repo.load(n)).toJson(),
+        generateFor(n).toJson(),
+        reason: 'level $n',
+      );
+    }
+  });
+
   test('levels past the baked ones are generated', () async {
     final level = await LevelRepository().load(bakedLevels + 1);
     expect(level.arrows, isNotEmpty);

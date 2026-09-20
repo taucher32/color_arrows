@@ -27,7 +27,7 @@ LevelParams paramsFor(int n) {
     size: _lerp(10, 20, t),
     maxLength: _lerp(5, 10, t),
     colors: _lerp(3, 5, t),
-    groups: n % 5 == 0 ? 0 : _lerp(3, 15, t),
+    groups: n % 5 == 0 ? 0 : _lerp(3, 8, t),
   );
 }
 

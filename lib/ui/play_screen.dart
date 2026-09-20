@@ -43,6 +43,7 @@ class _PlayScreenState extends State<PlayScreen> {
   GameSession? _session;
   ArrowsGame? _game;
   bool _deadEnd = false;
+  bool _failed = false;
 
   /// Arrows removed when the dead-end check last ran; blocked and wrong-color
   /// taps leave the board alone, so they do not need another check.
@@ -54,14 +55,18 @@ class _PlayScreenState extends State<PlayScreen> {
     _load(_s.progress.currentLevel);
   }
 
-  Future<void> _load(int n) async {
+  Future<void> _load(int n, {int skipped = 0}) async {
+    if (_failed) setState(() => _failed = false);
     final Level level;
     try {
       level = await _s.levels.load(n);
     } catch (e) {
-      // A broken level file must not stop the game: skip to the next one.
       debugPrint('level $n skipped: $e');
-      return _load(n + 1);
+      // A broken level file must not stop the game: skip to the next one,
+      // but give up after a few in a row instead of looping forever.
+      if (skipped < 3) return _load(n + 1, skipped: skipped + 1);
+      if (mounted) setState(() => _failed = true);
+      return;
     }
     if (!mounted) return;
     setState(() {
@@ -109,7 +114,21 @@ class _PlayScreenState extends State<PlayScreen> {
     return Scaffold(
       body: SafeArea(
         child: session == null || game == null
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: _failed
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Bölüm yüklenemedi'),
+                          const SizedBox(height: 12),
+                          FilledButton(
+                            onPressed: () => _load(_s.progress.currentLevel),
+                            child: const Text('Yeniden dene'),
+                          ),
+                        ],
+                      )
+                    : const CircularProgressIndicator(),
+              )
             : Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(

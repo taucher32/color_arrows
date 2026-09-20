@@ -134,6 +134,18 @@ void main() {
   );
 
   testWithGame<ArrowsGame>(
+    'sequenced: the arrow sliding out is not faded when the step changes',
+    () => make(pair(steps: const [ColorStep(s, 1), ColorStep(c, 1)])),
+    (game) async {
+      await game.ready();
+      final sky = byId(game)[1]!;
+      game.tapArrow(sky);
+      expect(sky.busy, isTrue);
+      expect(sky.dimmed, isFalse);
+    },
+  );
+
+  testWithGame<ArrowsGame>(
     'a wrong-color tap costs a life and wobbles the arrow',
     () => make(pair(steps: const [ColorStep(s, 1), ColorStep(c, 1)])),
     (game) async {

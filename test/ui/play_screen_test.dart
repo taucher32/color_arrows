@@ -35,6 +35,11 @@ class FakeRepository extends LevelRepository {
       : pair();
 }
 
+class ThrowingRepository extends LevelRepository {
+  @override
+  Future<Level> load(int n) async => throw StateError('broken level $n');
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -75,6 +80,25 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     progress = await ProgressStore.load();
+  });
+
+  testWidgets('levels that keep failing end in a retry state', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildTheme(),
+        home: PlayScreen(
+          services: Services(
+            progress: progress,
+            feedback: const SilentFeedback(),
+            ads: FakeAds(),
+            levels: ThrowingRepository(),
+          ),
+        ),
+      ),
+    );
+    await settle(tester);
+    expect(find.text('Bölüm yüklenemedi'), findsOneWidget);
+    expect(find.text('Yeniden dene'), findsOneWidget);
   });
 
   testWidgets('win shows the card and the button loads the next level', (

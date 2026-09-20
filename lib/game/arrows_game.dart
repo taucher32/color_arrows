@@ -76,6 +76,7 @@ class ArrowsGame extends FlameGame {
   /// A tap at a position of the game widget (what a `GestureDetector` around
   /// it reports). Finds the cell under it and taps the arrow that owns it.
   void tapAtScreen(Offset position) {
+    if (!isLoaded) return;
     final w = camera.globalToLocal(Vector2(position.dx, position.dy));
     final x = ((w.x - boardPad) / cellSize).floor();
     final y = ((w.y - boardPad) / cellSize).floor();
@@ -116,6 +117,7 @@ class ArrowsGame extends FlameGame {
   void _refreshDim() {
     final active = session.activeStep?.color;
     for (final c in arrowComponents) {
+      if (c.busy) continue;
       c.dimmed = active != null && c.arrow.color != active;
     }
   }

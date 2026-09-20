@@ -77,16 +77,16 @@ void main() {
     expect(scale(tester), 1);
   });
 
-  testWidgets('a tap while zoomed still hits the right child point', (
+  testWidgets('a tap while zoomed is reported in child coordinates', (
     tester,
   ) async {
     await pump(tester);
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
-    // Zoomed 1.6x about the centre (200,300): screen (200,300) is still the
-    // child's centre.
-    await tester.tapAt(const Offset(200, 300));
-    expect(tapped!.dx, closeTo(200, 1));
-    expect(tapped!.dy, closeTo(300, 1));
+    // Zoomed 1.6x about the centre (200,300): the translation is (-120,-180),
+    // so screen (300,400) is child ((300+120)/1.6, (400+180)/1.6).
+    await tester.tapAt(const Offset(300, 400));
+    expect(tapped!.dx, closeTo(262.5, 1));
+    expect(tapped!.dy, closeTo(362.5, 1));
   });
 }

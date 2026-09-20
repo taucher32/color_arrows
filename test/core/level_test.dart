@@ -30,7 +30,13 @@ void main() {
             Arrow(1, [(x: 0, y: 0)], Dir.left, s),
           ],
         ),
-        throwsFormatException,
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            contains('twice'),
+          ),
+        ),
       );
     });
 
@@ -72,7 +78,13 @@ void main() {
             Arrow(1, [(x: 1, y: 0)], Dir.right, s),
           ],
         ),
-        throwsFormatException,
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            contains('non-adjacent'),
+          ),
+        ),
       );
     });
 

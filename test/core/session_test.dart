@@ -3,6 +3,7 @@ import 'package:color_arrows/core/session.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support.dart';
+import '../wins.dart';
 
 void main() {
   group('GameSession', () {
@@ -27,6 +28,15 @@ void main() {
       expect(session.tap(0), isA<Removed>());
       expect(session.status, SessionStatus.won);
       expect(session.lives, startLives - 1);
+    });
+
+    test('winsInOrder detects an order that loses a life', () {
+      expect(winsInOrder(pair()), isFalse);
+      expect(
+        winsInOrder(pair(steps: const [ColorStep(c, 1), ColorStep(s, 1)])),
+        isFalse,
+      );
+      expect(winsInOrder(snake()), isTrue);
     });
 
     test('three blocked taps lose the level', () {

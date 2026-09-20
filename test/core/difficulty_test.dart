@@ -18,6 +18,8 @@ void main() {
     expect(paramsFor(10).size, 10);
     expect(paramsFor(50).size, 20);
     expect(paramsFor(90).size, 20);
+    expect(paramsFor(11).groups, 3);
+    expect(paramsFor(51).groups, 8); // 50 is a breather (0)
   });
 
   test('levels 1-10 are unordered, later ones sequenced except every 5th', () {

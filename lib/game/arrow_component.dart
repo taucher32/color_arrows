@@ -72,10 +72,23 @@ class ArrowComponent extends PositionComponent {
     }
   }
 
+  final _linePaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = cellSize * 0.16
+    ..strokeCap = StrokeCap.round
+    ..strokeJoin = StrokeJoin.round;
+  final _headPaint = Paint();
+  final _fadePaint = Paint()..color = const Color(0x59FFFFFF);
+
+  /// The body window at rest never changes, so it is built once.
+  Path? _restBody;
+
   @override
   void render(Canvas canvas) {
     final color = AppColors.arrow(arrow.color);
-    final body = track.window(_advance, _advance + track.bodyLength);
+    final body = _advance == 0
+        ? (_restBody ??= track.window(0, track.bodyLength))
+        : track.window(_advance, _advance + track.bodyLength);
     final to = _advance + track.bodyLength;
     final tip = track.pointAt(to);
     final d = track.directionAt(to);
@@ -89,27 +102,22 @@ class ArrowComponent extends PositionComponent {
     // the line and the head do not darken each other where they overlap.
     if (dimmed) {
       canvas.saveLayer(
-        body.getBounds().inflate(cellSize),
-        Paint()..color = const Color(0x59FFFFFF),
+        body
+            .getBounds()
+            .expandToInclude(Rect.fromCircle(center: tip, radius: 1))
+            .inflate(cellSize),
+        _fadePaint,
       );
     }
     canvas
-      ..drawPath(
-        body,
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = cellSize * 0.16
-          ..strokeCap = StrokeCap.round
-          ..strokeJoin = StrokeJoin.round,
-      )
+      ..drawPath(body, _linePaint..color = color)
       ..drawPath(
         Path()
           ..moveTo(tip.dx + d.dx * headLength, tip.dy + d.dy * headLength)
           ..lineTo(tip.dx + n.dx * halfWidth, tip.dy + n.dy * halfWidth)
           ..lineTo(tip.dx - n.dx * halfWidth, tip.dy - n.dy * halfWidth)
           ..close(),
-        Paint()..color = color,
+        _headPaint..color = color,
       );
     if (dimmed) canvas.restore();
     canvas.restore();
