@@ -16,6 +16,9 @@ Future<void> main() async {
   final feedback = DeviceFeedback();
   await feedback.load();
 
+  final progress = await ProgressStore.load();
+  await progress.resetOnce('start_at_level_1');
+
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -23,7 +26,7 @@ Future<void> main() async {
       theme: buildTheme(),
       home: PlayScreen(
         services: Services(
-          progress: await ProgressStore.load(),
+          progress: progress,
           feedback: feedback,
           ads: ads,
           levels: LevelRepository(),
