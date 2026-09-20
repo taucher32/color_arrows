@@ -17,6 +17,18 @@ void main() {
       expect(session.status, SessionStatus.won);
     });
 
+    test('a bent arrow is freed once the arrow in front of it leaves', () {
+      final session = GameSession(snake());
+      final blocked = session.tap(2);
+      expect(blocked, isA<Blocked>());
+      expect((blocked as Blocked).blocker.id, 1);
+      expect(session.tap(1), isA<Removed>());
+      expect(session.tap(2), isA<Removed>());
+      expect(session.tap(0), isA<Removed>());
+      expect(session.status, SessionStatus.won);
+      expect(session.lives, startLives - 1);
+    });
+
     test('three blocked taps lose the level', () {
       final session = GameSession(pair());
       session
@@ -47,9 +59,11 @@ void main() {
       expect(session.status, SessionStatus.won);
     });
 
-    test('remainingByColor counts what is left', () {
-      final session = GameSession(pair())..tap(1);
-      expect(session.remainingByColor, {c: 1});
+    test('remainingByColor counts arrows, not cells', () {
+      final session = GameSession(snake());
+      expect(session.remainingByColor, {c: 2, s: 1});
+      session.tap(1);
+      expect(session.remainingByColor, {c: 2});
     });
 
     test('dead end is detected on a sequenced level', () {
