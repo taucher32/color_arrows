@@ -10,6 +10,7 @@ import '../services/level_repository.dart';
 import '../services/progress_store.dart';
 import 'hud.dart';
 import 'level_cards.dart';
+import 'zoomable_board.dart';
 
 class Services {
   const Services({
@@ -25,7 +26,7 @@ class Services {
   final LevelRepository levels;
 }
 
-/// One screen: HUD on top, board below, result cards over the board.
+/// One screen: HUD on top, zoomable board below, result cards over the board.
 class PlayScreen extends StatefulWidget {
   const PlayScreen({super.key, required this.services});
 
@@ -42,6 +43,10 @@ class _PlayScreenState extends State<PlayScreen> {
   GameSession? _session;
   ArrowsGame? _game;
   bool _deadEnd = false;
+
+  /// Arrows removed when the dead-end check last ran; blocked and wrong-color
+  /// taps leave the board alone, so they do not need another check.
+  int _checkedAt = -1;
 
   @override
   void initState() {
@@ -69,6 +74,7 @@ class _PlayScreenState extends State<PlayScreen> {
     final session = GameSession(level);
     _session = session;
     _deadEnd = false;
+    _checkedAt = -1;
     _game = ArrowsGame(
       session: session,
       feedback: _s.feedback,
@@ -79,7 +85,12 @@ class _PlayScreenState extends State<PlayScreen> {
   void _onChanged() {
     final session = _session!;
     if (session.status == SessionStatus.won) _s.progress.unlock(_number + 1);
-    setState(() => _deadEnd = session.isDeadEnd);
+    setState(() {
+      if (session.removedCount != _checkedAt) {
+        _checkedAt = session.removedCount;
+        _deadEnd = session.isDeadEnd;
+      }
+    });
   }
 
   Future<void> _watchAd() async {
@@ -111,9 +122,10 @@ class _PlayScreenState extends State<PlayScreen> {
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: GameWidget(
+                              child: ZoomableBoard(
                                 key: ValueKey(game),
-                                game: game,
+                                onTap: game.tapAtScreen,
+                                child: GameWidget(game: game),
                               ),
                             ),
                             if (_card(session) case final card?)

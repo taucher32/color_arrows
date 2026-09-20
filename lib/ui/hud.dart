@@ -122,7 +122,11 @@ class ColorChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomPaint(size: const Size(14, 14), painter: _MarkPainter(color)),
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(color: base, shape: BoxShape.circle),
+            ),
             const SizedBox(width: 6),
             Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
           ],
@@ -130,22 +134,4 @@ class ColorChip extends StatelessWidget {
       ),
     );
   }
-}
-
-class _MarkPainter extends CustomPainter {
-  const _MarkPainter(this.color);
-
-  final ArrowColor color;
-
-  @override
-  void paint(Canvas canvas, Size size) => paintMark(
-    canvas,
-    color,
-    size.center(Offset.zero),
-    size.width / 2,
-    Paint()..color = AppColors.arrow(color),
-  );
-
-  @override
-  bool shouldRepaint(_MarkPainter old) => old.color != color;
 }
