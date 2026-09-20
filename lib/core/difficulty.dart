@@ -5,54 +5,43 @@ import 'level.dart';
 /// later ones are generated on the fly from the same curve.
 const bakedLevels = 30;
 
-typedef LevelParams = ({
-  int size,
-  int arrows,
-  int colors,
-  int groups,
-  double minBlocked,
-});
+typedef LevelParams = ({int size, int maxLength, int colors, int groups});
 
 int _lerp(int a, int b, double t) => (a + (b - a) * t).round();
 
-/// Difficulty curve. Levels 1-10 are unordered and teach the rules, later
-/// levels are sequenced, and every 5th one is unordered again as a breather.
+/// Difficulty curve. Levels 1-10 are unordered and teach the rules on small
+/// boards, later levels are sequenced and grow to 20x20, and every 5th one is
+/// unordered again as a breather.
 LevelParams paramsFor(int n) {
   if (n <= 10) {
     final t = (n - 1) / 9;
     return (
-      size: _lerp(3, 6, t),
-      arrows: _lerp(4, 22, t),
+      size: _lerp(5, 10, t),
+      maxLength: _lerp(3, 6, t),
       colors: _lerp(2, 4, t),
       groups: 0,
-      minBlocked: 0.2 + 0.3 * t,
     );
   }
   final t = ((n - 11) / 39).clamp(0.0, 1.0);
-  final size = _lerp(5, 8, t);
-  final arrows = _lerp(10, 34, t).clamp(1, size * size ~/ 2);
   return (
-    size: size,
-    arrows: arrows,
+    size: _lerp(10, 20, t),
+    maxLength: _lerp(5, 10, t),
     colors: _lerp(3, 5, t),
-    groups: n % 5 == 0 ? 0 : _lerp(3, 10, t),
-    minBlocked: 0.3 + 0.3 * t,
+    groups: n % 5 == 0 ? 0 : _lerp(3, 15, t),
   );
 }
 
-/// Deterministic: the same [n] always gives the same level. Eases the
-/// blocked-share target if a board cannot reach it.
+/// Deterministic: the same [n] always gives the same level.
 Level generateFor(int n) {
   final p = paramsFor(n);
-  for (var blocked = p.minBlocked; blocked >= -0.1; blocked -= 0.1) {
+  for (var k = 0; k < 5; k++) {
     final level = generateLevel(
       width: p.size,
       height: p.size,
-      arrowCount: p.arrows,
       colors: p.colors,
       groups: p.groups,
-      minBlocked: blocked < 0 ? 0 : blocked,
-      seed: n * 7919,
+      maxLength: p.maxLength,
+      seed: n * 7919 + k,
     );
     if (level != null) return level;
   }

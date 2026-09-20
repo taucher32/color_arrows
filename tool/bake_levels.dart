@@ -1,19 +1,27 @@
 // Writes assets/levels/level_001.json .. level_030.json from the difficulty
 // curve. Run from the project root: dart run tool/bake_levels.dart
-// The files are plain JSON, so any level can be edited by hand afterwards
-// (test/services/level_repository_test.dart re-checks them).
+// One arrow per line, so a level is easy to read and edit by hand
+// (test/services/level_repository_test.dart re-checks the files).
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:color_arrows/core/difficulty.dart';
+import 'package:color_arrows/core/level.dart';
+
+String encode(Level level) {
+  final json = level.toJson();
+  final arrows = (json['arrows'] as List).map((a) => '  ${jsonEncode(a)}');
+  final steps = json['steps'];
+  return '{"w":${level.width},"h":${level.height},\n'
+      '"arrows":[\n${arrows.join(',\n')}\n]'
+      '${steps == null ? '' : ',\n"steps":${jsonEncode(steps)}'}}\n';
+}
 
 void main() {
   final dir = Directory('assets/levels')..createSync(recursive: true);
-  const encoder = JsonEncoder.withIndent('  ');
   for (var n = 1; n <= bakedLevels; n++) {
     final name = 'level_${n.toString().padLeft(3, '0')}.json';
-    File('${dir.path}/$name')
-        .writeAsStringSync('${encoder.convert(generateFor(n).toJson())}\n');
+    File('${dir.path}/$name').writeAsStringSync(encode(generateFor(n)));
   }
   stdout.writeln('wrote $bakedLevels levels to ${dir.path}');
 }
