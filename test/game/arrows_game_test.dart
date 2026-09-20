@@ -146,6 +146,19 @@ void main() {
   );
 
   testWithGame<ArrowsGame>(
+    'sequenced: a shaking arrow is unfaded when the step changes',
+    () => make(pair(steps: const [ColorStep(s, 1), ColorStep(c, 1)])),
+    (game) async {
+      await game.ready();
+      final arrows = byId(game);
+      game.tapArrow(arrows[0]!); // coral, wrong color: shakes
+      expect(arrows[0]!.busy, isTrue);
+      game.tapArrow(arrows[1]!); // sky is active and open: the step advances
+      expect(arrows[0]!.dimmed, isFalse);
+    },
+  );
+
+  testWithGame<ArrowsGame>(
     'a wrong-color tap costs a life and wobbles the arrow',
     () => make(pair(steps: const [ColorStep(s, 1), ColorStep(c, 1)])),
     (game) async {

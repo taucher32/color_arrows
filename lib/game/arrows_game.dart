@@ -117,7 +117,7 @@ class ArrowsGame extends FlameGame {
   void _refreshDim() {
     final active = session.activeStep?.color;
     for (final c in arrowComponents) {
-      if (c.busy) continue;
+      if (session.isRemoved(c.arrow.id)) continue; // slides out as it was
       c.dimmed = active != null && c.arrow.color != active;
     }
   }
