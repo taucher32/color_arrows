@@ -3,19 +3,16 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 
-import '../core/arrow.dart';
 import '../core/session.dart';
 import '../services/feedback.dart';
 import '../theme.dart';
 import 'arrow_component.dart';
 import 'board_component.dart';
+import 'track.dart';
 
 /// Logical size of one board cell and the margin around the board.
-const cellSize = 64.0;
+const cellSize = 40.0;
 const boardPad = 16.0;
-
-Offset cellCenter(int x, int y) =>
-    Offset(boardPad + (x + 0.5) * cellSize, boardPad + (y + 0.5) * cellSize);
 
 /// Draws one [GameSession]. All rules live in the session; this class only
 /// turns each [TapResult] into an animation, sound and a HUD refresh.
@@ -37,6 +34,11 @@ class ArrowsGame extends FlameGame {
   /// Called after every tap that changed the session.
   final void Function() onChanged;
 
+  final _components = <int, ArrowComponent>{};
+
+  /// Arrow id per board cell.
+  late final List<int> _cellOwner;
+
   Iterable<ArrowComponent> get arrowComponents =>
       world.children.whereType<ArrowComponent>();
 
@@ -46,23 +48,50 @@ class ArrowsGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     camera.viewfinder.anchor = Anchor.topLeft;
-    world.add(
-      BoardComponent(cols: session.level.width, rows: session.level.height),
+    final level = session.level;
+    _cellOwner = List.filled(level.width * level.height, -1);
+    world.add(BoardComponent(cols: level.width, rows: level.height));
+    final boardSize = Vector2(
+      level.width * cellSize + 2 * boardPad,
+      level.height * cellSize + 2 * boardPad,
     );
-    for (final a in session.level.arrows) {
-      final c = cellCenter(a.x, a.y);
-      world.add(ArrowComponent(a)..position = Vector2(c.dx, c.dy));
+    for (final a in level.arrows) {
+      final track = Track.forArrow(
+        a,
+        width: level.width,
+        height: level.height,
+        cell: cellSize,
+        pad: boardPad,
+      );
+      final component = ArrowComponent(a, track, boardSize: boardSize);
+      _components[a.id] = component;
+      for (final c in a.cells) {
+        _cellOwner[c.y * level.width + c.x] = a.id;
+      }
+      world.add(component);
     }
     _refreshDim();
+  }
+
+  /// A tap at a position of the game widget (what a `GestureDetector` around
+  /// it reports). Finds the cell under it and taps the arrow that owns it.
+  void tapAtScreen(Offset position) {
+    final w = camera.globalToLocal(Vector2(position.dx, position.dy));
+    final x = ((w.x - boardPad) / cellSize).floor();
+    final y = ((w.y - boardPad) / cellSize).floor();
+    final level = session.level;
+    if (x < 0 || y < 0 || x >= level.width || y >= level.height) return;
+    final component = _components[_cellOwner[y * level.width + x]];
+    if (component != null) tapArrow(component);
   }
 
   void tapArrow(ArrowComponent component) {
     if (component.busy) return;
     final result = session.tap(component.arrow.id);
     switch (result) {
-      case Removed(:final arrow):
+      case Removed():
         feedback.removed();
-        component.flyOut(_cellsToLeave(arrow));
+        component.flyOut();
       case Blocked():
         feedback.blocked();
         component.bump();
@@ -82,17 +111,6 @@ class ArrowsGame extends FlameGame {
         break;
     }
     onChanged();
-  }
-
-  /// Cells to travel so the arrow is fully outside the board.
-  int _cellsToLeave(Arrow a) {
-    final level = session.level;
-    return switch (a.dir) {
-      Dir.right => level.width - a.x,
-      Dir.left => a.x + 1,
-      Dir.down => level.height - a.y,
-      Dir.up => a.y + 1,
-    };
   }
 
   void _refreshDim() {

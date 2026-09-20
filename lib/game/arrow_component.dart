@@ -1,109 +1,117 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
-import 'package:flame/events.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/painting.dart';
 
 import '../core/arrow.dart';
 import '../theme.dart';
 import 'arrows_game.dart';
+import 'track.dart';
 
-class ArrowComponent extends PositionComponent
-    with TapCallbacks, HasGameReference<ArrowsGame> {
-  ArrowComponent(this.arrow)
-    : super(size: Vector2.all(cellSize), anchor: Anchor.center);
+enum _Motion { idle, exit, bump, shake }
+
+/// One arrow, drawn as a thin colored line with a filled head. Animations
+/// slide a window along its [Track] (exit, bump) or wobble it sideways.
+class ArrowComponent extends PositionComponent {
+  ArrowComponent(this.arrow, this.track, {required Vector2 boardSize})
+    : super(size: boardSize);
 
   final Arrow arrow;
+  final Track track;
 
   /// Not the color of the active step: drawn faded.
   bool dimmed = false;
 
   /// An animation is running; taps are ignored until it ends.
-  bool busy = false;
+  bool get busy => _motion != _Motion.idle;
 
-  Vector2 get _dir => Vector2(arrow.dir.dx.toDouble(), arrow.dir.dy.toDouble());
+  _Motion _motion = _Motion.idle;
+  double _time = 0;
+  double _duration = 0.2;
+  double _advance = 0;
+  double _wobble = 0;
 
-  @override
-  void onTapDown(TapDownEvent event) => game.tapArrow(this);
-
-  /// Slide off the board in the arrow's direction.
-  void flyOut(int cells) {
-    busy = true;
-    add(
-      MoveEffect.by(
-        _dir * (cells * cellSize),
-        EffectController(duration: 0.15 + 0.015 * cells, curve: Curves.easeIn),
-        onComplete: removeFromParent,
-      ),
-    );
+  /// Slide off the board along the track.
+  void flyOut() {
+    _start(_Motion.exit, min(0.25, 0.15 + 0.01 * track.exitTravel / cellSize));
   }
 
-  /// Nudge toward the blocker and back.
-  void bump() {
-    busy = true;
-    add(
-      MoveEffect.by(
-        _dir * 10,
-        EffectController(duration: 0.07, alternate: true),
-        onComplete: () => busy = false,
-      ),
-    );
-  }
+  /// Nudge forward and back.
+  void bump() => _start(_Motion.bump, 0.15);
 
   /// Wrong color: wobble sideways.
-  void shake() {
-    busy = true;
-    add(
-      MoveEffect.by(
-        Vector2(7, 0),
-        EffectController(duration: 0.045, alternate: true, repeatCount: 3),
-        onComplete: () => busy = false,
-      ),
-    );
+  void shake() => _start(_Motion.shake, 0.24);
+
+  void _start(_Motion motion, double duration) {
+    _motion = motion;
+    _duration = duration;
+    _time = 0;
+  }
+
+  @override
+  void update(double dt) {
+    if (_motion == _Motion.idle) return;
+    _time += dt;
+    final p = min(1.0, _time / _duration);
+    switch (_motion) {
+      case _Motion.exit:
+        _advance = Curves.easeOut.transform(p) * track.exitTravel;
+        if (p >= 1) removeFromParent();
+      case _Motion.bump:
+        _advance = sin(pi * p) * cellSize * 0.3;
+      case _Motion.shake:
+        _wobble = sin(p * pi * 6) * (1 - p) * cellSize * 0.2;
+      case _Motion.idle:
+        break;
+    }
+    if (p >= 1 && _motion != _Motion.exit) {
+      _motion = _Motion.idle;
+      _advance = 0;
+      _wobble = 0;
+    }
   }
 
   @override
   void render(Canvas canvas) {
-    const inset = 5.0;
-    const s = cellSize - 2 * inset;
-    final alpha = dimmed ? 0.55 : 1.0;
-    final body = RRect.fromRectAndRadius(
-      const Rect.fromLTWH(inset, inset, s, s),
-      const Radius.circular(12),
-    );
-    canvas.drawRRect(
-      body,
-      Paint()..color = AppColors.arrow(arrow.color).withValues(alpha: alpha),
-    );
-
-    final ink = Paint()
-      ..color = AppColors.background.withValues(alpha: 0.75 * alpha);
+    final color = AppColors.arrow(arrow.color);
+    final body = track.window(_advance, _advance + track.bodyLength);
+    final to = _advance + track.bodyLength;
+    final tip = track.pointAt(to);
+    final d = track.directionAt(to);
+    final n = Offset(-d.dy, d.dx);
+    const headLength = cellSize * 0.34;
+    const halfWidth = cellSize * 0.2;
     canvas
       ..save()
-      ..translate(cellSize / 2, cellSize / 2)
-      ..rotate(atan2(arrow.dir.dy.toDouble(), arrow.dir.dx.toDouble()))
-      ..drawRect(
-        const Rect.fromLTRB(-0.28 * s, -0.08 * s, 0.06 * s, 0.08 * s),
-        ink,
+      ..translate(_wobble, 0);
+    // A faded arrow is drawn opaque into a layer that is faded as a whole, so
+    // the line and the head do not darken each other where they overlap.
+    if (dimmed) {
+      canvas.saveLayer(
+        body.getBounds().inflate(cellSize),
+        Paint()..color = const Color(0x59FFFFFF),
+      );
+    }
+    canvas
+      ..drawPath(
+        body,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = cellSize * 0.16
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round,
       )
       ..drawPath(
         Path()
-          ..moveTo(0.04 * s, -0.22 * s)
-          ..lineTo(0.32 * s, 0)
-          ..lineTo(0.04 * s, 0.22 * s)
+          ..moveTo(tip.dx + d.dx * headLength, tip.dy + d.dy * headLength)
+          ..lineTo(tip.dx + n.dx * halfWidth, tip.dy + n.dy * halfWidth)
+          ..lineTo(tip.dx - n.dx * halfWidth, tip.dy - n.dy * halfWidth)
           ..close(),
-        ink,
-      )
-      ..restore();
-
-    paintMark(
-      canvas,
-      arrow.color,
-      const Offset(inset + 0.14 * s, inset + 0.14 * s),
-      0.07 * s,
-      ink,
-    );
+        Paint()..color = color,
+      );
+    if (dimmed) canvas.restore();
+    canvas.restore();
   }
 }
