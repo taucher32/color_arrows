@@ -2826,7 +2826,7 @@ Run `flutter build apk --debug` (about 1-5 minutes; the Kotlin cross-drive fix i
 1. Level 1 opens as a 5x5 board completely covered with thin colored arrows (some bent), no squares, no dots, three lives, colored-dot counters, zoom buttons at the bottom right.
 2. Tapping a bent arrow anywhere on its line: if its head path is open it slides out along its own shape and leaves the board (about 0.2 s), the counter drops; if blocked it nudges toward the blocker and a life is lost.
 3. The + button zooms in about the centre, - zooms out (never below the fit view), the fit button resets. Two-finger pinch and one-finger drag work when zoomed. Tapping an arrow while zoomed still hits the arrow under the finger.
-4. Set the saved level to 29 (`adb shell run-as com.hakan.color_arrows` and write `flutter.level` = 29 into `shared_prefs/FlutterSharedPreferences.xml`, app stopped): a 20x20 sequenced board appears, arrows of the non-active colors look faded without dark blobs where the head meets the line, the step chips wrap onto two rows.
+4. Set the saved level to 29 (`adb shell run-as com.hakan.color_arrows` and write `flutter.level` = 29 into `shared_prefs/FlutterSharedPreferences.xml`, app stopped): a 15x15 sequenced board appears (20x20 is only reached at level 50), arrows of the non-active colors look faded without dark blobs where the head meets the line, the step chips wrap onto two rows.
 5. Win card, next level, lose card, dead-end card, restart and progress saving still behave as in v1.
 
 - [ ] **Step 4: Report**
