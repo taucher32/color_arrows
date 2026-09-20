@@ -1,0 +1,80 @@
+{
+  "w": 5,
+  "h": 5,
+  "arrows": [
+    {
+      "x": 2,
+      "y": 1,
+      "dir": "right",
+      "color": "coral"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "dir": "left",
+      "color": "amber"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "dir": "down",
+      "color": "amber"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "dir": "right",
+      "color": "coral"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "dir": "up",
+      "color": "coral"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dir": "right",
+      "color": "coral"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "dir": "up",
+      "color": "coral"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "dir": "up",
+      "color": "coral"
+    }
+  ],
+  "steps": [
+    {
+      "color": "coral",
+      "count": 1
+    },
+    {
+      "color": "amber",
+      "count": 4
+    },
+    {
+      "color": "coral",
+      "count": 5
+    }
+  ]
+}

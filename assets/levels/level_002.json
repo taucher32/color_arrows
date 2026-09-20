@@ -1,0 +1,42 @@
+{
+  "w": 3,
+  "h": 3,
+  "arrows": [
+    {
+      "x": 0,
+      "y": 2,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "dir": "up",
+      "color": "coral"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "dir": "left",
+      "color": "amber"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dir": "right",
+      "color": "coral"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "w": 3,
+  "h": 3,
+  "arrows": [
+    {
+      "x": 0,
+      "y": 2,
+      "dir": "down",
+      "color": "amber"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "dir": "down",
+      "color": "coral"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "dir": "down",
+      "color": "amber"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "dir": "left",
+      "color": "amber"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "w": 6,
+  "h": 6,
+  "arrows": [
+    {
+      "x": 5,
+      "y": 0,
+      "dir": "right",
+      "color": "mint"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "dir": "down",
+      "color": "amber"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "dir": "down",
+      "color": "amber"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "dir": "left",
+      "color": "amber"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "dir": "up",
+      "color": "mint"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "dir": "right",
+      "color": "mint"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "dir": "right",
+      "color": "amber"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "dir": "right",
+      "color": "amber"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "dir": "up",
+      "color": "amber"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "dir": "up",
+      "color": "amber"
+    }
+  ],
+  "steps": [
+    {
+      "color": "mint",
+      "count": 1
+    },
+    {
+      "color": "amber",
+      "count": 5
+    },
+    {
+      "color": "mint",
+      "count": 2
+    },
+    {
+      "color": "amber",
+      "count": 6
+    }
+  ]
+}
