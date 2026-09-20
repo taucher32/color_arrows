@@ -84,7 +84,10 @@ class _PlayScreenState extends State<PlayScreen> {
 
   Future<void> _watchAd() async {
     if (await _s.ads.showRewarded() && mounted) {
-      setState(() => _session!.lives = 1);
+      setState(() {
+        _session!.lives = 1;
+        _deadEnd = _session!.isDeadEnd;
+      });
     }
   }
 
