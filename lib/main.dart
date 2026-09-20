@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'services/ads.dart';
 import 'services/feedback.dart';
@@ -13,13 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  Ads ads;
-  try {
-    await MobileAds.instance.initialize();
-    ads = AdMobAds();
-  } catch (_) {
-    ads = const NoAds();
-  }
+  final ads = AdMobAds();
   final feedback = DeviceFeedback();
   await feedback.load();
 

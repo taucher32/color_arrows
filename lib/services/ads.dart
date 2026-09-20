@@ -23,7 +23,7 @@ class NoAds implements Ads {
 
 class AdMobAds implements Ads {
   AdMobAds() {
-    _load();
+    MobileAds.instance.initialize().then((_) => _load(), onError: (_) {});
   }
 
   // Google's public test unit. Replace with the real unit id before release.
