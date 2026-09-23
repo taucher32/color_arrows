@@ -11,11 +11,15 @@ class ZoomableBoard extends StatefulWidget {
     required this.child,
     required this.onTap,
     this.maxScale = 8,
+    this.initialScale = 1,
   });
 
   final Widget child;
   final void Function(Offset position) onTap;
   final double maxScale;
+
+  /// Zoom applied once when the board first appears (1 = whole board).
+  final double initialScale;
 
   @override
   State<ZoomableBoard> createState() => _ZoomableBoardState();
@@ -23,6 +27,7 @@ class ZoomableBoard extends StatefulWidget {
 
 class _ZoomableBoardState extends State<ZoomableBoard> {
   final _controller = TransformationController();
+  bool _applied = false;
 
   @override
   void dispose() {
@@ -57,6 +62,14 @@ class _ZoomableBoardState extends State<ZoomableBoard> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = constraints.biggest;
+        if (!_applied) {
+          _applied = true;
+          if (widget.initialScale > 1) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => _zoom(widget.initialScale, size),
+            );
+          }
+        }
         return Stack(
           children: [
             Positioned.fill(

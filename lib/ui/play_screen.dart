@@ -144,6 +144,10 @@ class _PlayScreenState extends State<PlayScreen> {
                               child: ZoomableBoard(
                                 key: ValueKey(game),
                                 onTap: game.tapAtScreen,
+                                // Keep cells a tappable size on big boards.
+                                initialScale: session.level.width > 10
+                                    ? session.level.width / 10
+                                    : 1,
                                 child: GameWidget(game: game),
                               ),
                             ),
