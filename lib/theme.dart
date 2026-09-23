@@ -9,11 +9,11 @@ abstract final class AppColors {
   static const textDim = Color(0xFF8A99AB);
 
   static const _arrow = {
-    ArrowColor.coral: Color(0xFFFF9A9A),
-    ArrowColor.amber: Color(0xFFFFCF94),
-    ArrowColor.mint: Color(0xFF97E6BE),
-    ArrowColor.sky: Color(0xFF98C8FF),
-    ArrowColor.violet: Color(0xFFC2AEFA),
+    ArrowColor.coral: Color(0xFFFF4040),
+    ArrowColor.amber: Color(0xFFFFB800),
+    ArrowColor.mint: Color(0xFF1FD67A),
+    ArrowColor.sky: Color(0xFF2F8CFF),
+    ArrowColor.violet: Color(0xFF9160FF),
   };
 
   static Color arrow(ArrowColor c) => _arrow[c]!;
