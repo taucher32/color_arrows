@@ -98,6 +98,20 @@ class _PlayScreenState extends State<PlayScreen> {
     });
   }
 
+  /// An ad runs after every [_adEvery]th level, but the first [_adFrom] are a
+  /// warm-up so a new player reaches the game before the first one.
+  static const _adEvery = 5;
+  static const _adFrom = 10;
+
+  Future<void> _nextLevel() async {
+    final finished = _number;
+    if (finished >= _adFrom && finished % _adEvery == 0) {
+      await _s.ads.showInterstitial();
+      if (!mounted) return;
+    }
+    await _load(finished + 1);
+  }
+
   Future<void> _watchAd() async {
     if (await _s.ads.showRewarded() && mounted) {
       setState(() {
@@ -172,7 +186,7 @@ class _PlayScreenState extends State<PlayScreen> {
           title: 'Bölüm tamamlandı',
           actions: [
             FilledButton(
-              onPressed: () => _load(_number + 1),
+              onPressed: _nextLevel,
               child: const Text('Sonraki bölüm'),
             ),
           ],

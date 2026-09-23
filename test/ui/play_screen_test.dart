@@ -19,8 +19,13 @@ class FakeAds implements Ads {
   @override
   bool isReady;
 
+  int interstitials = 0;
+
   @override
   Future<bool> showRewarded() async => true;
+
+  @override
+  Future<void> showInterstitial() async => interstitials++;
 }
 
 /// Serves [pair] for every level, or the sequenced variant for [sequencedAt].
@@ -49,6 +54,7 @@ void main() {
     WidgetTester tester, {
     bool sequenced = false,
     bool adReady = true,
+    FakeAds? ads,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -57,7 +63,7 @@ void main() {
           services: Services(
             progress: progress,
             feedback: const SilentFeedback(),
-            ads: FakeAds(isReady: adReady),
+            ads: ads ?? FakeAds(isReady: adReady),
             levels: FakeRepository(sequencedAt: sequenced ? 1 : null),
           ),
         ),
@@ -113,6 +119,34 @@ void main() {
     await settle(tester);
     expect(find.text('Bölüm tamamlandı'), findsNothing);
     expect(progress.currentLevel, 2);
+  });
+
+  /// Starts the screen at [level] so the ad rule can be checked at a level
+  /// other than the first.
+  Future<FakeAds> winAt(WidgetTester tester, int level) async {
+    SharedPreferences.setMockInitialValues({'flutter.level': level});
+    progress = await ProgressStore.load();
+    final ads = FakeAds();
+    final game = await pumpScreen(tester, ads: ads);
+    await tap(tester, game, 1);
+    await tap(tester, game, 0);
+    await tester.tap(find.text('Sonraki bölüm'));
+    await settle(tester);
+    return ads;
+  }
+
+  testWidgets('every fifth level past the warm-up ends in an ad', (
+    tester,
+  ) async {
+    expect((await winAt(tester, 10)).interstitials, 1);
+  });
+
+  testWidgets('the warm-up levels end without an ad', (tester) async {
+    expect((await winAt(tester, 5)).interstitials, 0);
+  });
+
+  testWidgets('levels between two ad levels end without an ad', (tester) async {
+    expect((await winAt(tester, 12)).interstitials, 0);
   });
 
   testWidgets('out of lives offers the ad, and the ad hides the card', (
