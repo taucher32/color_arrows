@@ -146,7 +146,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                 onTap: game.tapAtScreen,
                                 // Keep cells a tappable size on big boards.
                                 initialScale: session.level.width > 10
-                                    ? session.level.width / 10
+                                    ? 1 + (session.level.width - 10) / 20
                                     : 1,
                                 child: GameWidget(game: game),
                               ),
