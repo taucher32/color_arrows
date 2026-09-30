@@ -1,4 +1,4 @@
-// Writes assets/levels/level_001.json .. level_100.json from the difficulty
+// Writes assets/levels/level_001.json .. level_300.json from the difficulty
 // curve. Run from the project root: dart run tool/bake_levels.dart
 // One arrow per line, so a level is easy to read and edit by hand
 // (test/services/level_repository_test.dart re-checks the files).

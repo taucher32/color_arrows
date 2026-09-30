@@ -2,8 +2,9 @@ import 'generator.dart';
 import 'level.dart';
 
 /// Levels 1..[bakedLevels] ship as JSON assets (see tool/bake_levels.dart);
-/// later ones are generated on the fly from the same curve.
-const bakedLevels = 100;
+/// later ones are generated on the fly from the same curve (the next one is
+/// built in the background while the current one is played).
+const bakedLevels = 300;
 
 typedef LevelParams = ({int size, int maxLength, int colors, int groups});
 
