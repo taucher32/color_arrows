@@ -1,0 +1,9 @@
+# Copy to android/key.properties (git-ignored) and fill in.
+# Create the keystore once:
+#   keytool -genkey -v -keystore ~/renok-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+storeFile=/absolute/path/to/renok-upload.jks
+storePassword=CHANGE_ME
+keyAlias=upload
+keyPassword=CHANGE_ME
+# Real AdMob *app* id (ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY). Omit to use Google's test id.
+admobAppId=ca-app-pub-3940256099942544~3347511713

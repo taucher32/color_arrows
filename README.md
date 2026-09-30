@@ -1,17 +1,18 @@
 # RENOK
 
-A new Flutter project.
+Flutter arrow-puzzle game (Android).
 
-## Getting Started
+## Release build
 
-This project is a starting point for a Flutter application.
+1. Create an upload keystore and `android/key.properties` (see `android/key.properties.example`).
+2. Create the AdMob app + a rewarded and an interstitial unit; put the app id in `key.properties` (`admobAppId`).
+3. Set up the consent (GDPR) message in AdMob > Privacy & messaging.
+4. Build:
 
-A few resources to get you started if this is your first Flutter project:
+```
+flutter build appbundle --release \
+  --dart-define=ADMOB_REWARDED_ID=ca-app-pub-XXXX/YYYY \
+  --dart-define=ADMOB_INTERSTITIAL_ID=ca-app-pub-XXXX/ZZZZ
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Without these values the build uses debug signing and Google's test ad ids, so never upload such a build.
