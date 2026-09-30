@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:color_arrows/core/generator.dart';
+import 'package:renok/core/generator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../wins.dart';

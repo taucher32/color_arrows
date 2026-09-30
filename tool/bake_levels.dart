@@ -5,8 +5,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:color_arrows/core/difficulty.dart';
-import 'package:color_arrows/core/level.dart';
+import 'package:renok/core/difficulty.dart';
+import 'package:renok/core/level.dart';
 
 String encode(Level level) {
   final json = level.toJson();

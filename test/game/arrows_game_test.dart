@@ -1,8 +1,8 @@
-import 'package:color_arrows/core/level.dart';
-import 'package:color_arrows/core/session.dart';
-import 'package:color_arrows/game/arrow_component.dart';
-import 'package:color_arrows/game/arrows_game.dart';
-import 'package:color_arrows/services/feedback.dart';
+import 'package:renok/core/level.dart';
+import 'package:renok/core/session.dart';
+import 'package:renok/game/arrow_component.dart';
+import 'package:renok/game/arrows_game.dart';
+import 'package:renok/services/feedback.dart';
 import 'package:flame/components.dart';
 import 'package:flame_test/flame_test.dart';
 import 'package:flutter_test/flutter_test.dart';

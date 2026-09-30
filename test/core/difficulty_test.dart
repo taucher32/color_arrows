@@ -1,5 +1,5 @@
-import 'package:color_arrows/core/difficulty.dart';
-import 'package:color_arrows/core/level.dart';
+import 'package:renok/core/difficulty.dart';
+import 'package:renok/core/level.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../wins.dart';

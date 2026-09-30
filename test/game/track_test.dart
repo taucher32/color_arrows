@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:color_arrows/game/track.dart';
+import 'package:renok/game/track.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support.dart';

@@ -1,5 +1,5 @@
-import 'package:color_arrows/core/arrow.dart';
-import 'package:color_arrows/core/level.dart';
+import 'package:renok/core/arrow.dart';
+import 'package:renok/core/level.dart';
 
 const c = ArrowColor.coral;
 const s = ArrowColor.sky;

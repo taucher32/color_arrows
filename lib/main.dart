@@ -22,7 +22,7 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Color Arrows',
+      title: 'RENOK',
       theme: buildTheme(),
       home: PlayScreen(
         services: Services(
