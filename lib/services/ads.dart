@@ -30,15 +30,42 @@ class NoAds implements Ads {
 
 class AdMobAds implements Ads {
   AdMobAds() {
-    MobileAds.instance.initialize().then((_) {
-      _load();
-      _loadInterstitial();
-    }, onError: (_) {});
+    _start();
   }
 
-  // Google's public test units. Replace with the real unit ids before release.
-  static const _unitId = 'ca-app-pub-3940256099942544/5224354917';
-  static const _interstitialUnitId = 'ca-app-pub-3940256099942544/1033173712';
+  // Default to Google's public test units; release builds pass the real ones:
+  //   flutter build appbundle --dart-define=ADMOB_REWARDED_ID=ca-app-pub-.../...
+  //                           --dart-define=ADMOB_INTERSTITIAL_ID=ca-app-pub-.../...
+  static const _unitId = String.fromEnvironment(
+    'ADMOB_REWARDED_ID',
+    defaultValue: 'ca-app-pub-3940256099942544/5224354917',
+  );
+  static const _interstitialUnitId = String.fromEnvironment(
+    'ADMOB_INTERSTITIAL_ID',
+    defaultValue: 'ca-app-pub-3940256099942544/1033173712',
+  );
+
+  /// Asks for consent first (GDPR/UMP; the form only appears where required),
+  /// and only then starts the ads SDK. Any failure just means no ads.
+  Future<void> _start() async {
+    try {
+      final info = ConsentInformation.instance;
+      final updated = Completer<void>();
+      info.requestConsentInfoUpdate(
+        ConsentRequestParameters(),
+        () => updated.complete(),
+        (_) => updated.complete(),
+      );
+      await updated.future;
+      final shown = Completer<void>();
+      ConsentForm.loadAndShowConsentFormIfRequired((_) => shown.complete());
+      await shown.future;
+      if (!await info.canRequestAds()) return;
+      await MobileAds.instance.initialize();
+      _load();
+      _loadInterstitial();
+    } catch (_) {}
+  }
 
   RewardedAd? _ad;
   InterstitialAd? _interstitial;
