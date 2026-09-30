@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppColors.background in lib/theme.dart: the launch screen hands over
+         to the game without a flash. -->
+    <color name="splash_background">#0E141B</color>
+</resources>
