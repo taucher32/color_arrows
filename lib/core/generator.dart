@@ -126,7 +126,12 @@ List<Arrow>? _orient(int w, int h, List<List<Cell>> paths, Random rnd) {
     if (stuck.isEmpty) return order;
     final flips = 1 + rnd.nextInt(max(1, stuck.length ~/ 4));
     for (var f = 0; f < flips; f++) {
-      final id = stuck[rnd.nextInt(stuck.length)];
+      final picked = stuck[rnd.nextInt(stuck.length)];
+      // Turning the arrow in the way is what frees the picked one, so aim at
+      // the blocker most of the time; a purely random flip on a crowded board
+      // almost never lands on the arrow that matters.
+      final blocker = board.blockerOf(current[picked]);
+      final id = blocker == null || rnd.nextInt(4) == 0 ? picked : blocker.id;
       state[id] = paths[id].length == 1 ? rnd.nextInt(4) : 1 - state[id];
       current[id] = _arrowOf(id, paths[id], state[id]);
     }

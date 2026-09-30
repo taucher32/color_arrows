@@ -10,8 +10,10 @@ typedef LevelParams = ({int size, int maxLength, int colors, int groups});
 int _lerp(int a, int b, double t) => (a + (b - a) * t).round();
 
 /// Difficulty curve. Levels 1-10 are unordered and teach the rules on small
-/// boards, later levels are sequenced and grow to 20x20, and every 5th one is
-/// unordered again as a breather.
+/// boards, later levels are sequenced and grow to 22x22 by level 100, and
+/// every 5th one is unordered again as a breather. Past 100 the curve holds:
+/// a bigger board stops fitting a phone screen, and the generator needs many
+/// more tries to find one that can be cleared at all.
 LevelParams paramsFor(int n) {
   if (n <= 10) {
     final t = (n - 1) / 9;
@@ -22,12 +24,12 @@ LevelParams paramsFor(int n) {
       groups: 0,
     );
   }
-  final t = ((n - 11) / 39).clamp(0.0, 1.0);
+  final t = ((n - 11) / 89).clamp(0.0, 1.0);
   return (
-    size: _lerp(10, 20, t),
-    maxLength: _lerp(5, 10, t),
+    size: _lerp(10, 22, t),
+    maxLength: _lerp(5, 12, t),
     colors: _lerp(3, 5, t),
-    groups: n % 5 == 0 ? 0 : _lerp(3, 8, t),
+    groups: n % 5 == 0 ? 0 : _lerp(3, 12, t),
   );
 }
 

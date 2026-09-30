@@ -13,13 +13,17 @@ void main() {
     }
   }, timeout: const Timeout(Duration(seconds: 120)));
 
-  test('boards grow from 5x5 to 20x20', () {
+  test('boards grow from 5x5 to 22x22', () {
     expect(paramsFor(1).size, 5);
     expect(paramsFor(10).size, 10);
-    expect(paramsFor(50).size, 20);
-    expect(paramsFor(90).size, 20);
+    expect(paramsFor(100).size, 22);
     expect(paramsFor(11).groups, 3);
-    expect(paramsFor(51).groups, 8); // 50 is a breather (0)
+    expect(paramsFor(101).groups, 12);
+  });
+
+  test('the curve keeps climbing until level 100, then holds', () {
+    expect(paramsFor(50).size, lessThan(paramsFor(100).size));
+    expect(paramsFor(100), paramsFor(300));
   });
 
   test('levels 1-10 are unordered, later ones sequenced except every 5th', () {

@@ -51,7 +51,7 @@ class Level {
     );
   }
 
-  static const maxSize = 20;
+  static const maxSize = 22;
   static const maxArrows = 400;
 
   final int width;
