@@ -4,7 +4,7 @@
 **Geliştirici:** taucher32
 **İletişim:** hakanhuseyincelik@gmail.com
 
-Bu politika, Android için geliştirilen **RENOK** oyununun (paket adı: `com.hakan.renok`) hangi verileri işlediğini açıklar.
+Bu politika, Android için geliştirilen **RENOK** oyununun (paket adı: `tr.huns84.renok`) hangi verileri işlediğini açıklar.
 
 ## 1. Sizden doğrudan topladığımız veriler
 
@@ -64,7 +64,7 @@ Bu politikayı güncelleyebiliriz. Değişiklikler bu sayfada yeni "Son güncell
 **Developer:** taucher32
 **Contact:** hakanhuseyincelik@gmail.com
 
-This policy explains how the Android game **RENOK** (package `com.hakan.renok`) handles data.
+This policy explains how the Android game **RENOK** (package `tr.huns84.renok`) handles data.
 
 **Data we collect.** RENOK has no accounts or sign-in and has no servers of its own. We do not collect your name, email, location, contacts, photos or microphone data.
 
