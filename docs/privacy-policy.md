@@ -1,8 +1,8 @@
 # RENOK Gizlilik Politikası
 
-**Son güncelleme:** [TARİH]
-**Geliştirici:** [AD SOYAD / ŞİRKET ADI]
-**İletişim:** [E-POSTA ADRESİ]
+**Son güncelleme:** 30 09 2026
+**Geliştirici:** taucher32
+**İletişim:** hakanhuseyincelik@gmail.com
 
 Bu politika, Android için geliştirilen **RENOK** oyununun (paket adı: `com.hakan.renok`) hangi verileri işlediğini açıklar.
 
@@ -60,9 +60,9 @@ Bu politikayı güncelleyebiliriz. Değişiklikler bu sayfada yeni "Son güncell
 
 # RENOK Privacy Policy (English)
 
-**Last updated:** [DATE]
-**Developer:** [NAME / COMPANY]
-**Contact:** [EMAIL ADDRESS]
+**Last updated:** 30 09 2026
+**Developer:** taucher32
+**Contact:** hakanhuseyincelik@gmail.com
 
 This policy explains how the Android game **RENOK** (package `com.hakan.renok`) handles data.
 
