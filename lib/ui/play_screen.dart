@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import '../core/difficulty.dart';
 import '../core/level.dart';
 import '../core/session.dart';
 import '../game/arrows_game.dart';
@@ -55,13 +56,26 @@ class _PlayScreenState extends State<PlayScreen> {
     _load(_s.progress.currentLevel);
   }
 
+  /// Generated levels (past the baked ones) take seconds to build, so the
+  /// next one is built in the background while the current one is played.
+  int _prefetchedN = -1;
+  Future<Level>? _prefetched;
+
+  void _prefetch(int n) {
+    if (n <= bakedLevels || _prefetchedN == n) return;
+    _prefetchedN = n;
+    _prefetched = _s.levels.load(n);
+    _prefetched!.ignore();
+  }
+
   Future<void> _load(int n, {int skipped = 0}) async {
     if (_failed) setState(() => _failed = false);
     final Level level;
     try {
-      level = await _s.levels.load(n);
+      level = await (_prefetchedN == n ? _prefetched! : _s.levels.load(n));
     } catch (e) {
       debugPrint('level $n skipped: $e');
+      if (_prefetchedN == n) _prefetchedN = -1;
       // A broken level file must not stop the game: skip to the next one,
       // but give up after a few in a row instead of looping forever.
       if (skipped < 3) return _load(n + 1, skipped: skipped + 1);
@@ -73,6 +87,7 @@ class _PlayScreenState extends State<PlayScreen> {
       _number = n;
       _start(level);
     });
+    _prefetch(n + 1);
   }
 
   void _start(Level level) {
