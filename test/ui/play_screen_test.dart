@@ -14,10 +14,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../support.dart';
 
 class FakeAds implements Ads {
-  FakeAds({this.isReady = true});
+  FakeAds({bool isReady = true}) : ready = ValueNotifier(isReady);
 
   @override
-  bool isReady;
+  final ValueNotifier<bool> ready;
 
   int interstitials = 0;
 
@@ -174,6 +174,21 @@ void main() {
     expect(find.text('Canların bitti'), findsOneWidget);
     expect(find.text('Reklam izle, +1 can'), findsNothing);
     expect(find.text('Baştan başla'), findsOneWidget);
+  });
+
+  testWidgets('an ad that loads while the card is open adds the button', (
+    tester,
+  ) async {
+    final ads = FakeAds(isReady: false);
+    final game = await pumpScreen(tester, ads: ads);
+    for (var i = 0; i < 3; i++) {
+      await tap(tester, game, 0);
+    }
+    expect(find.text('Reklam izle, +1 can'), findsNothing);
+
+    ads.ready.value = true;
+    await tester.pump();
+    expect(find.text('Reklam izle, +1 can'), findsOneWidget);
   });
 
   testWidgets('dead end shows only a restart, which clears the card', (

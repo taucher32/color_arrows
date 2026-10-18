@@ -192,16 +192,22 @@ class _PlayScreenState extends State<PlayScreen> {
           ],
         );
       case SessionStatus.lost:
-        return EndCard(
-          title: 'Canların bitti',
-          actions: [
-            if (_s.ads.isReady)
-              FilledButton(
-                onPressed: _watchAd,
-                child: const Text('Reklam izle, +1 can'),
+        return ValueListenableBuilder(
+          valueListenable: _s.ads.ready,
+          builder: (context, adReady, _) => EndCard(
+            title: 'Canların bitti',
+            actions: [
+              if (adReady)
+                FilledButton(
+                  onPressed: _watchAd,
+                  child: const Text('Reklam izle, +1 can'),
+                ),
+              OutlinedButton(
+                onPressed: retry,
+                child: const Text('Baştan başla'),
               ),
-            OutlinedButton(onPressed: retry, child: const Text('Baştan başla')),
-          ],
+            ],
+          ),
         );
       case SessionStatus.playing:
         if (!_deadEnd) return null;

@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-/// The game works without ads: when [isReady] is false the UI simply hides
+/// The game works without ads: while [ready] is false the UI simply hides
 /// the "watch an ad" button, and an interstitial that never loaded is skipped.
 abstract class Ads {
-  bool get isReady;
+  /// Whether a rewarded ad is loaded. A listenable, so a button that is
+  /// already on screen appears as soon as the ad finishes loading.
+  ValueListenable<bool> get ready;
 
   /// Shows the rewarded ad; true when the player earned the reward.
   Future<bool> showRewarded();
@@ -19,7 +22,7 @@ class NoAds implements Ads {
   const NoAds();
 
   @override
-  bool get isReady => false;
+  ValueListenable<bool> get ready => ValueNotifier(false);
 
   @override
   Future<bool> showRewarded() async => false;
@@ -42,17 +45,23 @@ class AdMobAds implements Ads {
 
   RewardedAd? _ad;
   InterstitialAd? _interstitial;
+  final _ready = ValueNotifier(false);
 
   @override
-  bool get isReady => _ad != null;
+  ValueListenable<bool> get ready => _ready;
+
+  void _setAd(RewardedAd? ad) {
+    _ad = ad;
+    _ready.value = ad != null;
+  }
 
   void _load() {
     RewardedAd.load(
       adUnitId: _unitId,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) => _ad = ad,
-        onAdFailedToLoad: (_) => _ad = null,
+        onAdLoaded: _setAd,
+        onAdFailedToLoad: (_) => _setAd(null),
       ),
     );
   }
@@ -94,7 +103,7 @@ class AdMobAds implements Ads {
   Future<bool> showRewarded() async {
     final ad = _ad;
     if (ad == null) return false;
-    _ad = null;
+    _setAd(null);
     final result = Completer<bool>();
     var earned = false;
     ad.fullScreenContentCallback = FullScreenContentCallback(
